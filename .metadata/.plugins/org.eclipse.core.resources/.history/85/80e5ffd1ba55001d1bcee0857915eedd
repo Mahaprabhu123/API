@@ -1,0 +1,244 @@
+package com.test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import com.baseclass.BaseClass;
+import com.pojo.AddUserAddress_Input_Pojo;
+import com.pojo.AddUserAddress_Output_Pojo;
+import com.pojo.CityList;
+import com.pojo.GetCityId_Input_Pojo;
+import com.pojo.GetCityId_Output_Pojo;
+import com.pojo.GetStateId_Output_Pojo;
+import com.pojo.Login_Output_Pojo;
+import com.pojo.StateList;
+import com.pojo.UpdateUserAddress_Input_Pojo;
+import com.pojo.UpdateUserAddress_Output_Pojo;
+
+import io.restassured.http.Header;
+import io.restassured.http.Headers;
+import io.restassured.response.Response;
+
+public class Sample extends BaseClass {
+
+	String logtoken;
+
+	int stateIdNum;
+
+	String stateId;
+
+	int cityId;
+	
+	String address_Id;
+	
+	@Test(priority = 3)
+	public void getCityId() {
+
+		// 1.add Headers
+
+		List<Header> listHeader = new ArrayList<Header>();
+
+		Header h1 = new Header("accept", " application/json");
+		Header h3 = new Header("Content-Type", " application/json");
+
+		listHeader.add(h1);
+		listHeader.add(h3);
+
+		Headers headers = new Headers(listHeader);
+
+		addHeaders(headers);
+
+		// . pay load
+
+		GetCityId_Input_Pojo cityId_Input_Pojo = new GetCityId_Input_Pojo(stateId);
+
+		addBody(cityId_Input_Pojo);
+
+		// 3. req type
+
+		Response response4 = requestType("POST", "https://omrbranch.com/api/cityList");
+
+		int statusCode = getStatusCode();
+
+		System.out.println(statusCode);
+
+		Assert.assertEquals(statusCode, 200, "Verify status code");
+
+		GetCityId_Output_Pojo city_Output_Pojo = response4.as(GetCityId_Output_Pojo.class);
+
+		ArrayList<CityList> listCityDetails = city_Output_Pojo.getData();
+
+		for (CityList eachcityList : listCityDetails) {
+
+			String cityName = eachcityList.getName();
+
+			if (cityName.equals("Yercaud")) {
+
+				cityId = eachcityList.getId();
+
+				System.out.println(cityId);
+
+				Assert.assertEquals(cityName, "Yercaud", "Verify yercaud is present");
+			}
+
+		}
+	}
+
+	@Test(priority = 2)
+	public void getStateId() {
+
+		// 1. add header
+
+		addHeader("accept", " application/json");
+
+		// 2. req type
+
+		Response response3 = requestType("GET", "https://omrbranch.com/api/stateList");
+
+		int statusCode = getStatusCode();
+
+		System.out.println(statusCode);
+
+		Assert.assertEquals(statusCode, 200, "Verify status code");
+
+		GetStateId_Output_Pojo stateOutputPojo = response3.as(GetStateId_Output_Pojo.class);
+
+		ArrayList<StateList> listStateDetail = stateOutputPojo.getData();
+
+		for (StateList eachStateDetail : listStateDetail) {
+
+			String stateName = eachStateDetail.getName();
+
+			if (stateName.equals("Tamil Nadu")) {
+
+				stateIdNum = eachStateDetail.getId();
+
+				stateId = String.valueOf(stateIdNum);
+
+				System.out.println(stateIdNum);
+
+				Assert.assertEquals(stateName, "Tamil Nadu", "Verify Tamil Nadu is present");
+
+				break;
+
+			}
+		}
+	}
+
+	@Test(priority = 4)
+
+	public void addUserAddress() {
+
+		List<Header> listHeader = new ArrayList<Header>();
+
+		Header h1 = new Header("accept", " application/json");
+		Header h2 = new Header("Authorization", " Bearer " + logtoken);
+		Header h3 = new Header("Content-Type", " application/json");
+
+		listHeader.add(h1);
+		listHeader.add(h2);
+		listHeader.add(h3);
+
+		Headers headers = new Headers(listHeader);
+
+		addHeaders(headers);
+
+		AddUserAddress_Input_Pojo address_Input_Pojo = new AddUserAddress_Input_Pojo("Mahaprabhu", "Kandhan",
+				"9095626850", "TVH", stateIdNum, cityId, 103, "600097", "Block 5, NO 3355", "Home");
+
+		addBody(address_Input_Pojo);
+
+		Response response = requestType("POST", "https://omrbranch.com/api/addUserAddress");
+
+		int statusCode = response.getStatusCode();
+
+		System.out.println(statusCode);
+
+		Assert.assertEquals(statusCode, 200, "Verify Status Code");
+
+		AddUserAddress_Output_Pojo address_Output_Pojo = response.as(AddUserAddress_Output_Pojo.class);
+
+		String message = address_Output_Pojo.getMessage();
+
+		System.out.println(message);
+
+		Assert.assertEquals(message, "Address added successfully", "Verify address added successfully");
+
+	}
+
+	@Test(priority = 1)
+
+	public void login() {
+
+		addHeader("Content_Type", "application/json");
+
+		basicAuth("mahaprabhu24031997@gmail.com", "Maha1234@");
+
+		Response response2 = requestType("POST", "https://omrbranch.com/api/postmanBasicAuthLogin");
+
+		int statusCode = response2.getStatusCode();
+
+		System.out.println(statusCode);
+
+		Assert.assertEquals(statusCode, 200, "Verify status code");
+
+		Login_Output_Pojo as = response2.as(Login_Output_Pojo.class);
+
+		String first_name = as.getData().getFirst_name();
+
+		System.out.println(first_name);
+
+		logtoken = as.getData().getLogtoken();
+
+		Assert.assertEquals(first_name, "Mahaprabhu", "Verify First name");
+
+	}
+	
+	@Test(priority=5)
+		public void updateUserAddress() {
+		
+		List<Header> listHeader = new ArrayList<Header>();
+
+		Header h1 = new Header("accept", " application/json");
+		Header h2 = new Header("Authorization", " Bearer " + logtoken);
+		Header h3 = new Header("Content-Type", " application/json");
+
+		listHeader.add(h1);
+		listHeader.add(h2);
+		listHeader.add(h3);
+
+		Headers headers = new Headers(listHeader);
+
+		addHeaders(headers);
+
+		UpdateUserAddress_Input_Pojo updateUserAddress_Input_Pojo = new UpdateUserAddress_Input_Pojo(address_Id,"Mahaprabhu", "Kandhan",
+				"9095626850", "KMP", stateIdNum, cityId, 103, "600097", "Block 5, NO 3355", "Home");
+
+		addBody(updateUserAddress_Input_Pojo);
+
+		Response response = requestType("PUT", "https://omrbranch.com/api/updateUserAddress");
+
+		int statusCode = response.getStatusCode();
+
+		System.out.println(statusCode);
+
+		Assert.assertEquals(statusCode, 200, "Verify Status Code");
+
+		UpdateUserAddress_Output_Pojo updateUserAddress_Output_Pojo = response.as(UpdateUserAddress_Output_Pojo.class);
+
+		String message = updateUserAddress_Output_Pojo.getMessage();
+
+		System.out.println(message);
+
+		Assert.assertEquals(message, "Address updated successfully", "Verify address updated successfully");
+
+			
+			
+		}
+		
+		
+		
+}

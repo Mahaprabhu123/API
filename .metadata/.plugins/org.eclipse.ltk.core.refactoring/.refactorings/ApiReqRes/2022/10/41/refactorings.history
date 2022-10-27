@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;ApiReqRes/src/test/resources/Repres.json&apos; to &apos;Reuestres.json&apos;" description="Rename resource &apos;Repres.json&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/test/resources/Repres.json" name="Reuestres.json" stamp="1665228507942" updateReferences="true"/>
+</session>

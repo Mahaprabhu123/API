@@ -1,0 +1,31 @@
+package com.test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.testng.annotations.Test;
+
+import com.baseclass.BaseClass;
+
+import io.restassured.http.Header;
+
+public class Sample extends BaseClass {
+	
+	String logtoken;
+	@Test (priority =2)
+	Run|Debug
+	
+	public void addUserAddress() {
+		
+	//1.Headers
+		
+		List<Header> listHeader = new ArrayList<Header>();
+		 
+		Header h1= new Header("accept","application/json");
+		Header h2= new Header("accept","application/json");
+		Header h3= new Header("accept","application/json");
+		
+	}
+	
+
+}
